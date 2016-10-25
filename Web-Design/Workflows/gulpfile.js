@@ -7,6 +7,7 @@ var gulp = require('gulp'),
 	browserify = require('gulp-browserify'),
 	compass = require('gulp-compass'),
 	connect = require('gulp-connect'),
+	jsonMinify = require('gulp-jsonminify')
 	minifyHtml = require('gulp-minify-html');
 
 var env, 
@@ -71,7 +72,7 @@ gulp.task('compass', function(){
 
 gulp.task('watch', function(){
 	gulp.watch('builds/development/*.html', ['html']);
-	gulp.watch(jsonSources, ['json']);
+	gulp.watch('builds/development/js/*.json', ['json']);
 	gulp.watch(coffeeSources, ['coffee']);
 	gulp.watch(jsSources, ['js']);
 	gulp.watch('components/sass/*.scss', ['compass']);
@@ -92,7 +93,9 @@ gulp.task('html', function(){
 });
 
 gulp.task('json', function(){
-	gulp.src(jsonSources)
+	gulp.src('builds/development/js/*.json')
+	.pipe(gulpif(env === 'production', jsonMinify()))
+	.pipe(gulpif(env === 'production', gulp.dest('builds/production/js')))
 	.pipe(connect.reload())
 });
 
